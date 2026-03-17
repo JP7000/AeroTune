@@ -646,7 +646,7 @@ body.light #replay-canvas { background: #a8b8c8 !important; border: 1px solid #0
         <div class="step-num">1</div>
         <div class="step-content">
           <div class="step-title">Weigh your car</div>
-          <div class="step-desc">Fully assembled with axles and wheels, but no CO₂ cartridge. Enter this under Car Body → Total Mass.</div>
+          <div class="step-desc">Weigh the car fully assembled with axles and wheels, but <strong>without</strong> the CO₂ cartridge. The 23g empty cartridge shell is added automatically by the sim.</div>
           <span class="step-tool">scale / balance</span>
         </div>
       </div>
@@ -654,7 +654,7 @@ body.light #replay-canvas { background: #a8b8c8 !important; border: 1px solid #0
         <div class="step-num">2</div>
         <div class="step-content">
           <div class="step-title">Measure your wheels</div>
-          <div class="step-desc">Diameter (front and rear), mass of each wheel individually. Wheels are modelled as solid discs for rotational inertia.</div>
+          <div class="step-desc">Diameter (front and rear), mass of each wheel individually, and the axle bore diameter. Wheels are modelled as annular discs (PLA with bore hole) for rotational inertia.</div>
           <span class="step-tool">callipers + scale</span>
         </div>
       </div>
@@ -683,7 +683,7 @@ body.light #replay-canvas { background: #a8b8c8 !important; border: 1px solid #0
         </div>
       </div>
       <div class="onboard-note">
-        💡 <strong style="color:var(--text)">Physics model v2:</strong> Uses thrust-proportional CO₂ mass depletion, dynamic effective mass (m_chassis + m_CO₂ + I_wheel/r²), and a direct rolling resistance coefficient (μr × m × g) instead of axle-friction Crr. The sim is most reliable for <strong style="color:var(--text)">comparing designs</strong> rather than predicting exact times.
+        💡 <strong style="color:var(--text)">Physics model:</strong> Euler integration at dt=0.0001s. Thrust-proportional CO₂ mass depletion conserving total impulse. Dynamic m_eff (chassis + CO₂ + annular-disc wheel inertia + optional axle inertia). Track rolling resistance, bore friction (static axle), and body bearing friction (dynamic axle) all update each timestep. Most reliable for <strong style="color:var(--text)">comparing designs</strong> rather than predicting exact times.
       </div>
     </div>
   </div>
@@ -703,8 +703,8 @@ body.light #replay-canvas { background: #a8b8c8 !important; border: 1px solid #0
       </div>
       <div class="section-body">
         <div class="input-row">
-          <label>Total Mass <span>With empty cartridge, no CO₂ gas</span></label>
-          <div class="input-wrap"><input type="number" id="mass" value="80" min="10" max="500" step="0.5"><span class="unit">g</span></div>
+          <label>Car Body Mass <span>Without cartridge — 23g shell added automatically</span></label>
+          <div class="input-wrap"><input type="number" id="mass" value="57" min="10" max="500" step="0.5"><span class="unit">g</span></div>
         </div>
         <div class="input-row">
           <label>Coefficient of Drag (Cd) <button class="tip-btn" onclick="toggleTip(this)">?</button></label>
@@ -779,20 +779,68 @@ body.light #replay-canvas { background: #a8b8c8 !important; border: 1px solid #0
           <input type="hidden" id="axle-setup" value="static">
         </div>
 
+        <!-- Static-only options -->
+        <div id="axle-static-opts">
+          <div class="input-row">
+            <label>Axle Diameter <button class="tip-btn" onclick="toggleTip(this)">?</button></label>
+            <div class="tip-box">Outside diameter of the steel axle rod. Standard CO₂ dragster axles are 1/8" (3.175 mm). This is used to calculate bore friction — the sliding resistance between the PLA wheel bore and the steel axle surface: F_bore = μ_bore × m × g × (r_axle / r_wheel). Measure with callipers for accuracy.</div>
+            <div class="input-wrap"><input type="number" id="axle-dia-static" value="3.175" min="1" max="10" step="0.025"><span class="unit">mm</span></div>
+          </div>
+          <div class="input-full" style="margin-top:.4rem;">
+            <label>Bore Lubrication <button class="tip-btn" onclick="toggleTip(this)">?</button></label>
+            <div class="tip-box">Friction coefficient (μ) between the PLA wheel bore and the steel axle. Dry PLA-on-steel is ~0.25. Graphite powder reduces this to ~0.10. This is separate from track rolling resistance — it acts at the axle contact radius and gets amplified by r_axle/r_wheel.</div>
+            <div class="styled-select-wrap">
+              <select id="mu-bore-preset" class="styled-select" onchange="applyMuBorePreset()">
+                <option value="0.25">PLA on steel — dry</option>
+                <option value="0.10">PLA on steel — graphite</option>
+                <option value="0.15">PLA on steel — wax / petroleum jelly</option>
+                <option value="custom">Custom μ…</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-row" id="mu-bore-custom-row" style="display:none;">
+            <label>Custom μ_bore</label>
+            <div class="input-wrap"><input type="number" id="mu-bore-custom" value="0.25" min="0.01" max="1.0" step="0.01" oninput="syncCustomMuBore()"><span class="unit"></span></div>
+          </div>
+          <input type="hidden" id="mu-bore" value="0.25">
+          <div style="font-size:.6rem;color:var(--muted);margin-top:.3rem;line-height:1.5;">
+            F_bore = μ_bore × m(t) × g × (r_axle/r_wheel) — weighted 40/60 front/rear.
+          </div>
+        </div>
+
         <!-- Dynamic-only options -->
         <div id="axle-dynamic-opts" style="display:none;">
           <div style="font-size:.6rem;color:var(--muted);margin:.2rem 0 .6rem;line-height:1.5;">
-            Solid cylinder: I = ½mr² → effective mass penalty per axle = ½m_axle.<br>
-            Two axles total: adds m_axle to m_eff.
+            Axle rotates with wheels — no bore sliding friction. Inertia penalty plus body bearing friction where the axle sits in the car body.
           </div>
           <div class="input-row">
             <label>Axle Diameter <button class="tip-btn" onclick="toggleTip(this)">?</button></label>
-            <div class="tip-box">Outside diameter of the spinning axle rod. Standard CO₂ dragster axles are 1/8" (3.175 mm) steel. Measure with callipers if unsure.</div>
+            <div class="tip-box">Outside diameter of the spinning axle rod. Standard CO₂ dragster axles are 1/8" (3.175 mm) steel. Used for both rotational inertia and body bearing friction calculations.</div>
             <div class="input-wrap"><input type="number" id="axle-dia" value="3.175" min="1" max="10" step="0.025"><span class="unit">mm</span></div>
           </div>
           <div class="input-row">
             <label>Axle Mass <span>one axle</span></label>
             <div class="input-wrap"><input type="number" id="axle-mass" value="4.0" min="0.5" max="30" step="0.1"><span class="unit">g</span></div>
+          </div>
+          <div class="input-full" style="margin-top:.4rem;">
+            <label>Body Bearing Lubrication <button class="tip-btn" onclick="toggleTip(this)">?</button></label>
+            <div class="tip-box">In dynamic axle setup the steel axle spins inside a hole drilled into the PLA car body. This is a journal bearing — friction: F = μ_body × m(t) × g × (r_axle/r_wheel), weighted 40/60 front/rear. Steel-on-PLA dry is ~0.25. Graphite powder in the body hole reduces this to ~0.10.</div>
+            <div class="styled-select-wrap">
+              <select id="mu-body-preset" class="styled-select" onchange="applyMuBodyPreset()">
+                <option value="0.25">Steel on PLA — dry</option>
+                <option value="0.10">Steel on PLA — graphite</option>
+                <option value="0.15">Steel on PLA — wax</option>
+                <option value="custom">Custom μ…</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-row" id="mu-body-custom-row" style="display:none;">
+            <label>Custom μ_body</label>
+            <div class="input-wrap"><input type="number" id="mu-body-custom" value="0.25" min="0.01" max="1.0" step="0.01" oninput="syncCustomMuBody()"><span class="unit"></span></div>
+          </div>
+          <input type="hidden" id="mu-body" value="0.25">
+          <div style="font-size:.6rem;color:var(--muted);margin-top:.3rem;line-height:1.5;">
+            F_body = μ_body × m(t) × g × (r_axle/r_wheel) — weighted 40/60 front/rear.
           </div>
         </div>
       </div>
@@ -842,9 +890,8 @@ body.light #replay-canvas { background: #a8b8c8 !important; border: 1px solid #0
         <div style="font-size:.6rem;color:var(--muted);line-height:1.6;">
           Standard 8g CO₂ cartridge. Thrust curve fitted to Pitsco 8g measured data.
         </div>
-        <input type="hidden" id="nozzle-dia" value="2.95">
         <input type="hidden" id="co2-F0" value="18.3">
-        <input type="hidden" id="co2-tau" value="0.117">
+        <input type="hidden" id="co2-tau" value="0.1174">
         <input type="hidden" id="co2-dur" value="0.45">
         <hr class="divider">
         <div class="input-row">
@@ -949,9 +996,11 @@ body.light #replay-canvas { background: #a8b8c8 !important; border: 1px solid #0
         <span style="font-size:.58rem;color:#7a9ab0;cursor:pointer;text-decoration:underline;font-family:var(--font-mono);font-weight:400;letter-spacing:.05em;text-transform:none;" onclick="toggleForcesExplain()">explain these forces</span>
       </div>
       <div id="forces-explain" style="display:none;font-size:.63rem;color:#7a9ab0;line-height:1.7;background:var(--surface);border-radius:3px;padding:.6rem .8rem;margin-bottom:.8rem;">
-        <strong style="color:var(--text);">At launch</strong> the car is stationary so air drag is zero. All resistance comes from <em>wheel spin-up</em> — the rotational inertia of the wheels acting as additional effective mass. PLA wheels are modelled as annular discs: I = ½m(R_outer² + R_bore²), so I/R² = ½m(1 + (R_bore/R)²). A larger bore increases the penalty above the solid-disc baseline.<br><br>
-        <strong style="color:var(--text);">Rolling resistance</strong> acts as a constant force throughout the entire run: F_roll = μr × m(t) × g. It decreases slightly as the CO₂ cartridge empties and total mass falls. This is the primary variable you control through wheel-track surface choice.<br><br>
-        <strong style="color:var(--text);">At peak speed</strong> air drag dominates — it grows with the square of velocity and becomes the single largest resistive force the car fights at high speed. This is where aerodynamic body shaping and frontal area reduction pay the biggest dividends.
+        <strong style="color:var(--text);">At launch</strong> air drag is zero. Resistance is wheel spin-up inertia only — PLA wheels as annular discs: I = ½m(R² + r_bore²).<br><br>
+        <strong style="color:var(--text);">Track rolling resistance</strong> — wheel deformation against the track surface. F = μr × m(t) × g.<br><br>
+        <strong style="color:var(--text);">Bore friction</strong> (static axle) — PLA bore sliding radially on the steel axle. F = μ_bore × m(t) × g × (r_axle/r_wheel). Graphite reduces μ from ~0.25 to ~0.10.<br><br>
+        <strong style="color:var(--text);">Body bearing friction</strong> (dynamic axle) — steel axle spinning in the car body hole. Same formula: F = μ_body × m(t) × g × (r_axle/r_wheel). Graphite in the body hole reduces this significantly.<br><br>
+        <strong style="color:var(--text);">At peak speed</strong> air drag dominates — grows with v² and is the biggest force to fight at high speed.
       </div>
 
       <div style="font-size:.58rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:.4rem;">At Launch</div>
@@ -963,9 +1012,19 @@ body.light #replay-canvas { background: #a8b8c8 !important; border: 1px solid #0
 
       <div style="font-size:.58rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:.4rem;margin-top:.6rem;">Throughout Race</div>
       <div class="breakdown-row">
-        <div class="bd-label">Rolling Resistance</div>
+        <div class="bd-label">Track Rolling</div>
         <div class="bd-bar-wrap"><div class="bd-bar" id="bar-roll" style="background:var(--green);width:0%"></div></div>
         <div class="bd-val" id="val-roll">—</div>
+      </div>
+      <div class="breakdown-row" id="bore-friction-row">
+        <div class="bd-label">Bore Friction</div>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-bore" style="background:#c084fc;width:0%"></div></div>
+        <div class="bd-val" id="val-bore">—</div>
+      </div>
+      <div class="breakdown-row" id="body-bearing-row">
+        <div class="bd-label">Body Bearing</div>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-body" style="background:#fb923c;width:0%"></div></div>
+        <div class="bd-val" id="val-body">—</div>
       </div>
 
       <div style="font-size:.58rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:.4rem;margin-top:.6rem;">At Peak Speed</div>
@@ -1190,17 +1249,53 @@ function toggleForcesExplain() {
 
 function updateAxleSetup() {
   const isDynamic = $('axle-setup').value === 'dynamic';
+  $('axle-static-opts').style.display  = isDynamic ? 'none'  : 'block';
   $('axle-dynamic-opts').style.display = isDynamic ? 'block' : 'none';
+}
+
+function applyMuBorePreset() {
+  const sel = $('mu-bore-preset');
+  if (!sel) return;
+  const customRow = $('mu-bore-custom-row');
+  if (sel.value === 'custom') {
+    if (customRow) customRow.style.display = 'grid';
+    $('mu-bore').value = $('mu-bore-custom').value;
+  } else {
+    if (customRow) customRow.style.display = 'none';
+    $('mu-bore').value = sel.value;
+  }
+}
+
+function syncCustomMuBore() {
+  $('mu-bore').value = $('mu-bore-custom').value;
+}
+
+function applyMuBodyPreset() {
+  const sel = $('mu-body-preset');
+  if (!sel) return;
+  const customRow = $('mu-body-custom-row');
+  if (sel.value === 'custom') {
+    if (customRow) customRow.style.display = 'grid';
+    $('mu-body').value = $('mu-body-custom').value;
+  } else {
+    if (customRow) customRow.style.display = 'none';
+    $('mu-body').value = sel.value;
+  }
+}
+
+function syncCustomMuBody() {
+  if ($('mu-body-custom')) $('mu-body').value = $('mu-body-custom').value;
 }
 
 function applyMuPreset() {
   const sel = $('mu-r-preset');
+  if (!sel) return;
   const customRow = $('mu-r-custom-row');
   if (sel.value === 'custom') {
-    customRow.style.display = 'grid';
+    if (customRow) customRow.style.display = 'grid';
     $('mu-r').value = v('mu-r-custom');
   } else {
-    customRow.style.display = 'none';
+    if (customRow) customRow.style.display = 'none';
     $('mu-r').value = sel.value;
   }
 }
@@ -1209,26 +1304,22 @@ function syncCustomMuR() {
   $('mu-r').value = v('mu-r-custom');
 }
 
-// ── CO₂ thrust parameters — fixed 8g Pitsco cartridge ─────────
-function updateCO2() {
-  // Fixed measured values for 8g Pitsco cartridge at 20°C
-  $('co2-F0').value  = '18.30';
-  $('co2-tau').value = '0.1174';
-  $('co2-dur').value = '0.45';
-}
-
 // ── Core physics simulation ────────────────────────────────────
-// Matches Python model:
-//   - Thrust-proportional CO₂ mass depletion: dm = (m_CO2_initial/J_total) * F_thrust * dt
-//   - Dynamic effective mass: m_eff = m_chassis + m_CO2 + I_front/r_front² + I_rear/r_rear²
-//   - Rolling resistance: F_roll = μr * m_total * g  (updates each step)
-//   - Air drag: F_drag = ½ρCdAv²
-//   - Solid-disc wheel inertia: I = ½mr²  →  I/r² = ½m  →  2 wheels: m_rot = m_wheel
+// Euler integration, dt=0.0001s
+// Forces: thrust (exponential decay) · aero drag · track rolling · bore/body bearing friction
+// Effective mass: chassis + CO₂(t) + annular-disc wheel inertia + optional solid-cylinder axle inertia
 function simulate(params) {
-  const {
-    mChassis, mCO2Initial, Cd, A, rho, muR, mRotEff,
-    thrustF0, thrustTau, thrustDur, trackLen
-  } = params;
+  var mChassis    = params.mChassis;
+  var mCO2Initial = params.mCO2Initial;
+  var Cd          = params.Cd;
+  var A           = params.A;
+  var rho         = params.rho;
+  var muRTotal    = params.muRTotal;
+  var mRotEff     = params.mRotEff;
+  var thrustF0    = params.thrustF0;
+  var thrustTau   = params.thrustTau;
+  var thrustDur   = params.thrustDur;
+  var trackLen    = params.trackLen;
 
   // Total impulse for thrust-proportional mass depletion
   const J_total = thrustF0 * thrustTau * (1 - Math.exp(-thrustDur / thrustTau));
@@ -1258,7 +1349,7 @@ function simulate(params) {
 
     // Resistance forces
     const F_drag = 0.5 * rho * Cd * A * vel * vel;
-    const F_roll = muR * mTotal * G;  // dynamic — updates as CO₂ mass depletes
+    const F_roll = muRTotal * mTotal * G;  // track + bore friction, dynamic
 
     // Net acceleration
     const a = (F_thrust - F_drag - F_roll) / mEff;
@@ -1281,14 +1372,16 @@ function simulate(params) {
   return { finishT, finishV, peakV, peakA, sT, sV, sD };
 }
 
-function buildParams(overrides={}) {
-  // Total mass weighed with empty cartridge inserted — shell is already included.
+function buildParams() {
+  // User enters car body only (no cartridge).
+  // 23g empty Pitsco cartridge shell is added here — it stays in the car the whole run.
   // Only the 8g CO₂ gas depletes during the run.
-  const mChassis    = v('mass') / 1000;
-  const mCO2Initial = 0.008;  // 8g cartridge only
+  const CARTRIDGE_SHELL = 0.023;
+  const mChassis    = v('mass') / 1000 + CARTRIDGE_SHELL;
+  const mCO2Initial = 0.008;
 
-  const Cd = overrides.Cd ?? v('cd-custom');
-  const A  = overrides.A  ?? (v('frontal-override') / 1e6);     // mm² → m²
+  const Cd = v('cd-custom');
+  const A  = v('frontal-override') / 1e6;
 
   // Annular disc (PLA wheel with axle bore): I = ½m(R_outer² + R_bore²)
   // Rotational effective mass contribution per wheel pair = I/R_outer²:
@@ -1296,28 +1389,49 @@ function buildParams(overrides={}) {
   //   same for rear → wheel contribution = mWF×(1+(rBore/rF)²) + mWR×(1+(rBore/rR)²)
   const mWF   = v('wf-mass') / 1000;
   const mWR   = v('wr-mass') / 1000;
-  const rF    = v('wf-dia') / 2 / 1000;   // outer radius front (m)
-  const rR    = v('wr-dia') / 2 / 1000;   // outer radius rear  (m)
-  const rBore = v('bore-dia') / 2 / 1000; // bore radius (m)
-  const mRotWheels = mWF * (1 + (rBore/rF)**2) + mWR * (1 + (rBore/rR)**2);
-
-  // Dynamic axle: solid cylinder I = ½mr², I/r² = ½m per axle
-  // Two axles spinning → adds 2×(½m_axle) = m_axle to effective mass
+  const rF    = v('wf-dia') / 2 / 1000;
+  const rR    = v('wr-dia') / 2 / 1000;
+  // In dynamic mode the wheel is fixed to the axle — bore radius = axle radius.
+  // In static mode the bore is a loose fit around the fixed axle — use measured bore-dia.
   const isDynamic = $('axle-setup').value === 'dynamic';
-  const mAxleRot  = isDynamic ? (v('axle-mass') / 1000) * 2 * 0.5 : 0;  // = m_axle_one × 2 × ½
+  const rBore = isDynamic
+    ? v('axle-dia') / 2 / 1000
+    : v('bore-dia') / 2 / 1000;
+  const mRotWheels = mWF * (1 + (rBore/rF)*(rBore/rF)) + mWR * (1 + (rBore/rR)*(rBore/rR));
+
+  const mAxleRot  = isDynamic ? (v('axle-mass') / 1000) * 2 * 0.5 : 0;
   const mRotEff   = mRotWheels + mAxleRot;
 
-  const muR = overrides.muR ?? v('mu-r');
+  // Track rolling resistance
+  const muR = v('mu-r');
 
-  const thrustF0  = overrides.F0  ?? v('co2-F0');
-  const thrustTau = overrides.tau ?? v('co2-tau');
-  const thrustDur = overrides.dur ?? v('co2-dur');
+  // Bore friction — static axle only: wheel PLA bore slides on fixed steel axle
+  let muBoreEff = 0;
+  if (!isDynamic) {
+    const rAxle  = v('axle-dia-static') / 2 / 1000;
+    const muBore = v('mu-bore');
+    muBoreEff = muBore * (0.40 * rAxle/rF + 0.60 * rAxle/rR);
+  }
 
-  const tempC = 20;
-  const rho   = 1.225 * (293.15 / (273.15 + tempC));   // ≈ 1.204 at 20°C
+  // Body bearing friction — dynamic axle only: steel axle spins in car body hole
+  // Same journal bearing formula as bore friction, at body contact radius
+  let muBodyEff = 0;
+  if (isDynamic) {
+    const rAxle   = v('axle-dia') / 2 / 1000;
+    const muBody  = v('mu-body');
+    muBodyEff = muBody * (0.40 * rAxle/rF + 0.60 * rAxle/rR);
+  }
+
+  const muRTotal = muR + muBoreEff + muBodyEff;
+
+  const thrustF0  = v('co2-F0');
+  const thrustTau = v('co2-tau');
+  const thrustDur = v('co2-dur');
+
+  const rho      = 1.225 * (293.15 / (273.15 + 20));  // 20°C: 1.204 kg/m³
   const trackLen = v('track');
 
-  return { mChassis, mCO2Initial, Cd, A, rho, muR, mRotEff, mWF, mWR, thrustF0, thrustTau, thrustDur, trackLen };
+  return { mChassis, mCO2Initial, Cd, A, rho, muR, muBoreEff, muBodyEff, muRTotal, mRotEff, thrustF0, thrustTau, thrustDur, trackLen };
 }
 
 // ── Run simulation & update UI ─────────────────────────────────
@@ -1340,17 +1454,38 @@ function runSim() {
   $('r-kmh').textContent = (r.peakV*3.6).toFixed(1);
   $('r-ms2').textContent = r.peakA.toFixed(1);
 
-  // Forces breakdown — scaled relative to each other
-  const fSpinUp = p.mRotEff * r.peakA;                              // rotational inertia at peak accel
-  const fRoll   = p.muR * (p.mChassis + p.mCO2Initial) * G;        // rolling resistance at run start (max value)
-  const fAero   = 0.5 * p.rho * p.Cd * p.A * r.peakV * r.peakV;   // aero drag at peak speed
-  const maxF    = Math.max(fSpinUp, fRoll, fAero) || 1;
+  // Forces breakdown
+  const fSpinUp = p.mRotEff * r.peakA;
+  const fRoll   = p.muR       * (p.mChassis + p.mCO2Initial) * G;
+  const fBore   = p.muBoreEff * (p.mChassis + p.mCO2Initial) * G;
+  const fBody   = p.muBodyEff * (p.mChassis + p.mCO2Initial) * G;
+  const fAero   = 0.5 * p.rho * p.Cd * p.A * r.peakV * r.peakV;
+  const maxF    = Math.max(fSpinUp, fRoll + fBore + fBody, fAero) || 1;
 
   $('forces-card').style.display = 'block';
   $('val-rot').textContent  = fSpinUp.toFixed(3) + ' N';
   $('bar-rot').style.width  = (fSpinUp / maxF * 100).toFixed(0) + '%';
   $('val-roll').textContent = fRoll.toFixed(3) + ' N';
   $('bar-roll').style.width = (fRoll / maxF * 100).toFixed(0) + '%';
+
+  const boreRow = $('bore-friction-row');
+  if (p.muBoreEff > 0) {
+    boreRow.style.display = 'flex';
+    $('val-bore').textContent = fBore.toFixed(3) + ' N';
+    $('bar-bore').style.width = (fBore / maxF * 100).toFixed(0) + '%';
+  } else {
+    boreRow.style.display = 'none';
+  }
+
+  const bodyRow = $('body-bearing-row');
+  if (p.muBodyEff > 0) {
+    bodyRow.style.display = 'flex';
+    $('val-body').textContent = fBody.toFixed(3) + ' N';
+    $('bar-body').style.width = (fBody / maxF * 100).toFixed(0) + '%';
+  } else {
+    bodyRow.style.display = 'none';
+  }
+
   $('val-aero').textContent = fAero.toFixed(3) + ' N';
   $('bar-aero').style.width = (fAero / maxF * 100).toFixed(0) + '%';
 
@@ -1372,12 +1507,12 @@ function runSim() {
 
   $('range-card').style.display = 'block';
   $('range-note').innerHTML =
-    `<strong style="color:var(--accent)">${tMid.toFixed(4)}s</strong> predicted finish time<br>` +
-    `<span style="color:var(--muted);font-size:.6rem;line-height:1.7;">` +
-    `Model v2: 8g CO₂ gas depletes proportionally to thrust · dynamic m_eff · annular-disc PLA wheel inertia · μr rolling resistance. ` +
-    `Thrust curve fitted to Pitsco 8g measured data. ` +
-    `Real life times typically run 8–12% slower than predicted. ` +
-    `Use as a relative comparison tool — not an absolute predictor.</span>`;
+    '<strong style="color:var(--accent)">' + tMid.toFixed(4) + 's</strong> predicted finish time<br>' +
+    '<span style="color:var(--muted);font-size:.6rem;line-height:1.7;">' +
+    'Model v2: 8g CO\u2082 gas depletes proportionally to thrust \u00b7 dynamic m_eff \u00b7 annular-disc PLA wheel inertia \u00b7 \u03bcr rolling resistance. ' +
+    'Thrust curve fitted to Pitsco 8g measured data. ' +
+    'Real times can be up to 10% slower than predicted. ' +
+    'Use as a relative comparison tool \u2014 not an absolute predictor.</span>';
 
   $('chart-empty').style.display = 'none';
   $('chart').style.display = 'block';
@@ -1400,9 +1535,10 @@ let savedRuns = [];
 
 function saveRun() {
   if (!window._lastRun) { showError('Run the simulation first.'); return; }
-  const label  = $('run-label').value.trim() || `Run ${savedRuns.length + 1}`;
+  const label  = $('run-label').value.trim() || ('Run ' + (savedRuns.length + 1));
   const colour = $('run-colour').value;
-  savedRuns.push({ label, colour, ...window._lastRun, sT: window._lastRun.sT.slice(), sD: window._lastRun.sD.slice() });
+  const runData = Object.assign({}, window._lastRun, { label: label, colour: colour, sT: window._lastRun.sT.slice(), sD: window._lastRun.sD.slice() });
+  savedRuns.push(runData);
   window._lastRun = null;
   const sb = $('save-btn');
   if (sb) { sb.disabled = true; sb.style.opacity = '.4'; sb.style.cursor = 'not-allowed'; sb.textContent = '💾 Save Run — run simulation first'; }
@@ -1431,14 +1567,14 @@ function renderSavedRuns() {
     const cls   = i === 0 ? '' : (diff < 0 ? 'faster' : 'slower');
     const delta = i === 0
       ? '<span style="color:var(--muted);font-size:.6rem;">baseline</span>'
-      : `<span class="run-delta ${cls}">${sign}${(diff*1000).toFixed(1)}ms</span>`;
-    return `<div class="run-row">
-      <div class="run-dot" style="background:${r.colour}"></div>
-      <div class="run-name" title="${r.label}">${r.label}</div>
-      <div class="run-time">${(r.displayT || r.finishT).toFixed(4)}s</div>
-      ${delta}
-      <span class="run-del" onclick="deleteRun(${i})" title="Remove">✕</span>
-    </div>`;
+      : '<span class="run-delta ' + cls + '">' + sign + (diff*1000).toFixed(1) + 'ms</span>';
+    return '<div class="run-row">' +
+      '<div class="run-dot" style="background:' + r.colour + '"></div>' +
+      '<div class="run-name" title="' + r.label + '">' + r.label + '</div>' +
+      '<div class="run-time">' + (r.displayT || r.finishT).toFixed(4) + 's</div>' +
+      delta +
+      '<span class="run-del" onclick="deleteRun(' + i + ')" title="Remove">\u2715</span>' +
+      '</div>';
   }).join('');
   renderForceChart();
 }
@@ -1471,10 +1607,12 @@ function updateReplayCard() {
   if (!savedRuns.length) { $('replay-card').style.display = 'none'; return; }
   $('replay-card').style.display = 'block';
   _replayRuns = savedRuns.map(r => ({ label: r.label, colour: r.colour, finishT: r.finishT, displayT: r.displayT || r.finishT }));
-  $('replay-runs-legend').innerHTML = _replayRuns.map(r =>
-    `<div style="display:flex;align-items:center;gap:.35rem;font-size:.62rem;color:var(--muted);">
-      <div style="width:10px;height:3px;border-radius:2px;background:${r.colour}"></div>${r.label} — ${r.displayT.toFixed(4)}s
-    </div>`).join('');
+  $('replay-runs-legend').innerHTML = _replayRuns.map(function(r) {
+    return '<div style="display:flex;align-items:center;gap:.35rem;font-size:.62rem;color:var(--muted);">' +
+      '<div style="width:10px;height:3px;border-radius:2px;background:' + r.colour + '"></div>' +
+      r.label + ' \u2014 ' + r.displayT.toFixed(4) + 's' +
+      '</div>';
+  }).join('');
   setTimeout(() => drawReplayFrame(0), 50);
 }
 
@@ -1518,9 +1656,9 @@ function drawReplayFrame(simT) {
 
 function updateReplayTimeDisplay(simT) {
   const disp=$('replay-time-display'); if(!disp) return;
-  disp.innerHTML=_replayRuns.map(run=>{
-    const done=simT>=run.finishT, col=done?run.colour:'var(--muted)';
-    return `<span style="font-family:var(--font-display);font-size:.7rem;color:${col};">${run.label.slice(0,12)}: ${run.displayT.toFixed(4)}s</span>`;
+  disp.innerHTML=_replayRuns.map(function(run){
+    var done=simT>=run.finishT, col=done?run.colour:'var(--muted)';
+    return '<span style="font-family:var(--font-display);font-size:.7rem;color:' + col + ';">' + run.label.slice(0,12) + ': ' + run.displayT.toFixed(4) + 's</span>';
   }).join('');
 }
 
@@ -1569,16 +1707,17 @@ function validateInputs() {
     {id:'wr-mass',          label:'Rear wheel mass',      min:0.1, max:30   },
     {id:'track',            label:'Track length',         min:5,   max:100  },
     {id:'bore-dia',         label:'Axle bore diameter',   min:0.5, max:15   },
-    {id:'axle-dia',         label:'Axle diameter',         min:1,   max:10,  onlyIf: () => $('axle-setup').value === 'dynamic' },
-    {id:'axle-mass',        label:'Axle mass',             min:0.5, max:30,  onlyIf: () => $('axle-setup').value === 'dynamic' },
+    {id:'axle-dia-static',  label:'Axle diameter',        min:1,   max:10,  onlyIf: () => $('axle-setup').value === 'static'  },
+    {id:'axle-dia',         label:'Axle diameter',        min:1,   max:10,  onlyIf: () => $('axle-setup').value === 'dynamic' },
+    {id:'axle-mass',        label:'Axle mass',            min:0.5, max:30,  onlyIf: () => $('axle-setup').value === 'dynamic' },
   ];
   document.querySelectorAll('.invalid').forEach(el=>el.classList.remove('invalid'));
   fields.forEach(f=>{
     if (f.onlyIf && !f.onlyIf()) return;
     const el=$(f.id); if(!el) return;
     const val=parseFloat(el.value);
-    if(isNaN(val)||val<=0) { errors.push(`${f.label} can't be zero or empty.`); el.classList.add('invalid'); }
-    else if(val<f.min||val>f.max) { errors.push(`${f.label} looks unusual (entered ${val}, expected ${f.min}–${f.max}).`); el.classList.add('invalid'); }
+    if(isNaN(val)||val<=0) { errors.push(f.label + " can't be zero or empty."); el.classList.add('invalid'); }
+    else if(val<f.min||val>f.max) { errors.push(f.label + ' looks unusual (entered ' + val + ', expected ' + f.min + '\u2013' + f.max + ').'); el.classList.add('invalid'); }
   });
   const cd=parseFloat($('cd-custom').value);
   if(isNaN(cd)||cd<=0) { errors.push("Coefficient of Drag can't be zero or empty."); $('cd-custom').classList.add('invalid'); }
@@ -1586,20 +1725,20 @@ function validateInputs() {
   if(isNaN(muR)||muR<=0) { errors.push("Rolling resistance μr can't be zero or empty."); }
   const banner=$('validation-banner');
   if(errors.length>0) {
-    banner.innerHTML='⚠ Please fix the following before running:<br>'+errors.map(e=>`• ${e}`).join('<br>');
+    banner.innerHTML='⚠ Please fix the following before running:<br>'+errors.map(function(e){ return '• '+e; }).join('<br>');
     banner.classList.add('visible'); return false;
   }
   banner.classList.remove('visible'); return true;
 }
 
 window.addEventListener('load', () => {
-  try { updateCO2(); applyMuPreset(); updateAxleSetup(); } catch(e) { console.warn('Init error:', e); }
+  try { applyMuPreset(); applyMuBorePreset(); applyMuBodyPreset(); updateAxleSetup(); } catch(e) { console.warn('Init error:', e); }
 
   // On mobile, collapse all sidebar sections by default to reduce scroll
   if (window.innerWidth <= 520) {
     document.querySelectorAll('.section-body').forEach(body => {
       body.classList.add('collapsed');
-      const arrow = body.previousElementSibling?.querySelector('.section-arrow');
+      const arrow = body.previousElementSibling && body.previousElementSibling.querySelector('.section-arrow');
       if (arrow) arrow.classList.remove('open');
     });
     // Also collapse onboarding
