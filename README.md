@@ -1,6 +1,6 @@
 # CO₂ Dragster Simulator
 
-link: https://JP7000.github.io/AeroTune
+link: https://JP7000.github.io/AeroTune/
 
 A physics-based race time predictor for CO₂-powered model dragsters, built as a single self-contained HTML file. No dependencies, no build step — just open it in a browser.
 
