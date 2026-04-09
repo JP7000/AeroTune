@@ -247,6 +247,8 @@ function syncCustomMuR() {
 }
 
 // ── Run simulation & update UI ─────────────────────────────────
+gtag('event', 'run_simulation', {'event_category': 'engagement'});
+
 let _prevFinishT = null;
 
 function runSim() {
