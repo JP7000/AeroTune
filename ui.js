@@ -291,7 +291,14 @@ function runSim() {
     boreRow.style.display = 'none';
   }
 
- 
+   const bodyRow = $('body-bearing-row');
+  if (p.muBodyEff > 0) {
+    bodyRow.style.display = 'flex';
+    $('val-body').textContent = fBody.toFixed(3) + ' N';
+    $('bar-body').style.width = (fBody / maxF * 100).toFixed(0) + '%';
+  } else {
+    bodyRow.style.display = 'none';
+  }
 
   $('val-aero').textContent = fAero.toFixed(3) + ' N';
   $('bar-aero').style.width = (fAero / maxF * 100).toFixed(0) + '%';
