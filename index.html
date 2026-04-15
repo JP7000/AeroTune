@@ -3,130 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-  <!-- ── SEO ─────────────────────────────────────────────────── -->
   <title>AeroTune — CO₂ Dragster Race Time Predictor</title>
-  <meta name="description" content="Physics-based CO₂ dragster simulator that models aerodynamics, mass, friction, and velocity to predict race performance.">
-  <meta name="keywords"    content="CO2 dragster, dragster simulator, physics simulation, aerodynamics, F1 in Schools">
-  <link rel="canonical"    href="https://JP7000.github.io/AeroTune">
-
-  <!-- ── Open Graph ───────────────────────────────────────────── -->
-  <meta property="og:title"       content="AeroTune — CO₂ Dragster Race Time Predictor">
+  <meta name="description" content="Physics-based CO₂ dragster simulator for F1 in Schools and TSA competitors.">
+  <link rel="canonical" href="https://JP7000.github.io/AeroTune">
+  <meta property="og:title" content="AeroTune — CO₂ Dragster Race Time Predictor">
   <meta property="og:description" content="Physics-based CO₂ dragster simulator for F1 in Schools and TSA competitors.">
-  <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://JP7000.github.io/AeroTune">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://JP7000.github.io/AeroTune">
 
-  <!-- ── Analytics ────────────────────────────────────────────── -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-X3VV5XXW72"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-X3VV5XXW72');
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date()); gtag('config','G-X3VV5XXW72');
   </script>
   <meta name="google-site-verification" content="DekrRBbofhLB_k5p50McFN2pv17AHm0qP8BRPqkTiJ0">
 
-  <!-- ── Fonts ────────────────────────────────────────────────── -->
-  <!-- Exo 2: display / headings (motorsport geometric) -->
-  <!-- Space Mono: numeric readouts (timing screen) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-
-<!-- ════════════════════════════════════════════════════════════
-     HEADER
-════════════════════════════════════════════════════════════ -->
+<!-- ════════ HEADER ════════ -->
 <header class="header">
   <div class="header-inner">
     <div class="logo">
-      <div class="logo-eyebrow">AeroTune</div>
-      <div class="logo-title">Race Time Predictor</div>
-      <div class="logo-sub">Physics-Based CO₂ Dragster Simulator &nbsp;·&nbsp; v3.0</div>
+      <div class="logo-eyebrow">Physics Simulator</div>
+      <div class="logo-title"><span class="logo-aero">AERO</span>TUNE</div>
+      <div class="logo-sub">CO₂ Dragster Race Time Predictor &nbsp;·&nbsp; v3.1</div>
     </div>
     <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">☀ Light Mode</button>
   </div>
   <div class="header-stripe" aria-hidden="true"></div>
 </header>
 
-
-<!-- ════════════════════════════════════════════════════════════
-     ONBOARDING — collapsible how-to panel
-════════════════════════════════════════════════════════════ -->
+<!-- ════════ ONBOARDING ════════ -->
 <section class="onboard">
   <div class="onboard-inner">
-
     <div class="onboard-header" onclick="toggleOnboard(this)" role="button" aria-expanded="true">
       <div class="onboard-tag">▶ How to use this simulator</div>
       <div class="onboard-toggle" id="onboard-toggle-label">click to collapse</div>
     </div>
-
     <div class="onboard-body" id="onboard-body">
-
       <div class="step">
         <div class="step-num">01</div>
         <div class="step-content">
           <div class="step-title">Weigh your car</div>
-          <div class="step-desc">
-            Weigh fully assembled with axles and wheels, <strong>without</strong>
-            the CO₂ cartridge. The 23g empty shell is added automatically.
-          </div>
+          <div class="step-desc">Weigh fully assembled with axles and wheels, <strong>without</strong> the CO₂ cartridge. The 23g empty shell is added automatically.</div>
           <span class="step-tool">scale / balance</span>
         </div>
       </div>
-
       <div class="step">
         <div class="step-num">02</div>
         <div class="step-content">
           <div class="step-title">Measure your wheels</div>
-          <div class="step-desc">
-            Diameter (front and rear), mass of each wheel, and axle bore diameter.
-            Modelled as annular discs — or enter a measured MOI directly.
-          </div>
+          <div class="step-desc">Diameter (front and rear), mass of each wheel, and axle bore diameter. Modelled as annular discs — or enter a measured MOI directly.</div>
           <span class="step-tool">callipers + scale</span>
         </div>
       </div>
-
       <div class="step">
         <div class="step-num">03</div>
         <div class="step-content">
           <div class="step-title">Frontal area &amp; Cd</div>
-          <div class="step-desc">
-            Trace the front face onto graph paper and count squares. Use the Cd
-            preset closest to your body shape, or enter a wind tunnel value.
-          </div>
+          <div class="step-desc">Trace the front face onto graph paper and count squares. Use the Cd preset closest to your body shape, or enter a wind tunnel value.</div>
           <span class="step-tool">graph paper / tunnel</span>
         </div>
       </div>
-
       <div class="step">
         <div class="step-num">04</div>
         <div class="step-content">
           <div class="step-title">Rolling resistance</div>
-          <div class="step-desc">
-            Pick your track surface and wheel type. μr captures tyre-deformation
-            losses throughout the run.
-          </div>
+          <div class="step-desc">Pick your track surface and wheel type. μr captures tyre-deformation losses throughout the run.</div>
           <span class="step-tool">track inspection</span>
         </div>
       </div>
-
       <div class="step">
         <div class="step-num">05</div>
         <div class="step-content">
           <div class="step-title">Set track length</div>
-          <div class="step-desc">
-            Enter your competition distance. The sim uses a standard 8g Pitsco
-            cartridge with a fitted thrust curve — no cartridge setup needed.
-          </div>
+          <div class="step-desc">Enter your competition distance. The sim uses a standard 8g Pitsco cartridge with a fitted thrust curve — no cartridge setup needed.</div>
           <span class="step-tool">ruler / tape</span>
         </div>
       </div>
-
       <div class="onboard-note">
         💡 <strong style="color:var(--text)">Physics model:</strong>
         Euler integration at dt = 0.0001 s · thrust-proportional CO₂ depletion ·
@@ -135,361 +95,188 @@
         <strong style="color:var(--text)">2–3%</strong> of real track times.
         Best used for <strong style="color:var(--text)">comparing designs</strong>.
       </div>
-
-    </div><!-- /onboard-body -->
+    </div>
   </div>
 </section>
 
-
-<!-- ════════════════════════════════════════════════════════════
-     APP LAYOUT — sidebar inputs + main results
-════════════════════════════════════════════════════════════ -->
+<!-- ════════ APP LAYOUT ════════ -->
 <div class="app">
 
-
-  <!-- ══════════════════════════
-       SIDEBAR — input controls
-  ══════════════════════════ -->
+  <!-- ══ SIDEBAR ══ -->
   <aside class="sidebar">
 
-
-    <!-- ── Car Body ─────────────────────────────────────────── -->
+    <!-- Car Body -->
     <div class="section-card">
       <div class="section-header" onclick="toggleSection(this)">
-        <div class="section-dot" style="background:#E8002D"></div>
+        <div class="section-dot" style="background:var(--red)"></div>
         <div class="section-title">Car Body</div>
         <div class="section-arrow open" aria-hidden="true">▶</div>
       </div>
       <div class="section-body">
-
         <div class="input-row">
-          <label for="mass">
-            Car Body Mass
-            <span>Without cartridge — 23g shell added automatically</span>
-          </label>
+          <label for="mass">Car Body Mass<span>Without cartridge — 23g shell added automatically</span></label>
           <div class="input-wrap">
             <input type="number" id="mass" value="57" min="10" max="500" step="0.5">
             <span class="unit">g</span>
           </div>
         </div>
-
         <div class="input-row">
-          <label for="cd-custom">
-            Coefficient of Drag (Cd)
-            <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-          </label>
-          <div class="tip-box" role="tooltip">
-            Cd measures how easily air flows around your car. Lower is faster.
-            Most CO₂ dragsters with exposed wheels fall between 0.4 and 0.6.
-          </div>
+          <label for="cd-custom">Coefficient of Drag (Cd)<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+          <div class="tip-box" role="tooltip">Cd measures how easily air flows around your car. Lower is faster. Most CO₂ dragsters with exposed wheels fall between 0.4 and 0.6.</div>
           <div class="input-wrap">
             <input type="number" id="cd-custom" value="0.45" min="0.05" max="1.5" step="0.01">
-            <span class="unit" style="color:var(--muted);font-style:italic;font-size:.55rem;">dim.</span>
+            <span class="unit" style="color:var(--muted);font-style:italic;font-size:.53rem;">dim.</span>
           </div>
         </div>
-
         <div class="input-row">
-          <label for="frontal-override">
-            Frontal Area
-            <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-          </label>
-          <div class="tip-box" role="tooltip">
-            Cross-section area head-on. In Fusion 360: sketch on the front face,
-            use Project to trace the outline, then check the sketch area in the
-            bottom-right corner.
-          </div>
+          <label for="frontal-override">Frontal Area<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+          <div class="tip-box" role="tooltip">Cross-section area head-on. In Fusion 360: sketch on the front face, use Project to trace the outline, then check the sketch area in the bottom-right corner.</div>
           <div class="input-wrap">
             <input type="number" id="frontal-override" value="2000" min="100" max="10000" step="10">
             <span class="unit">mm²</span>
           </div>
         </div>
-
       </div>
-    </div><!-- /car body -->
+    </div>
 
-
-    <!-- ── Wheels ───────────────────────────────────────────── -->
+    <!-- Wheels -->
     <div class="section-card">
       <div class="section-header" onclick="toggleSection(this)">
-        <div class="section-dot" style="background:#FF8000"></div>
+        <div class="section-dot" style="background:var(--accent2)"></div>
         <div class="section-title">Wheels</div>
         <div class="section-arrow open" aria-hidden="true">▶</div>
       </div>
       <div class="section-body">
-
         <div class="subsection-label">Front Wheels</div>
-
         <div class="input-row">
           <label for="wf-dia">Diameter</label>
-          <div class="input-wrap">
-            <input type="number" id="wf-dia" value="31" min="5" max="80" step="0.5">
-            <span class="unit">mm</span>
-          </div>
+          <div class="input-wrap"><input type="number" id="wf-dia" value="31" min="5" max="80" step="0.5"><span class="unit">mm</span></div>
         </div>
-
         <div class="input-row">
           <label for="wf-mass">Mass (each)</label>
-          <div class="input-wrap">
-            <input type="number" id="wf-mass" value="3" min="0.1" max="30" step="0.1">
-            <span class="unit">g</span>
-          </div>
+          <div class="input-wrap"><input type="number" id="wf-mass" value="3" min="0.1" max="30" step="0.1"><span class="unit">g</span></div>
         </div>
-
         <hr class="divider">
         <div class="subsection-label">Rear Wheels</div>
-
         <div class="input-row">
           <label for="wr-dia">Diameter</label>
-          <div class="input-wrap">
-            <input type="number" id="wr-dia" value="38" min="5" max="80" step="0.5">
-            <span class="unit">mm</span>
-          </div>
+          <div class="input-wrap"><input type="number" id="wr-dia" value="38" min="5" max="80" step="0.5"><span class="unit">mm</span></div>
         </div>
-
         <div class="input-row">
           <label for="wr-mass">Mass (each)</label>
-          <div class="input-wrap">
-            <input type="number" id="wr-mass" value="3" min="0.1" max="30" step="0.1">
-            <span class="unit">g</span>
-          </div>
+          <div class="input-wrap"><input type="number" id="wr-mass" value="3" min="0.1" max="30" step="0.1"><span class="unit">g</span></div>
         </div>
-
         <hr class="divider">
-
-        <!-- Inertia model selector -->
         <div class="input-full">
-          <label>
-            Wheel Inertia Model
-            <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-          </label>
-          <div class="tip-box" role="tooltip">
-            Annular disc calculates MOI from geometry — good for simple printed
-            wheels. Custom MOI is more accurate for wheels with spokes, variable
-            infill, or non-uniform wall thickness.
-          </div>
+          <label>Wheel Inertia Model<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+          <div class="tip-box" role="tooltip">Annular disc calculates MOI from geometry — good for simple printed wheels. Custom MOI is more accurate for wheels with spokes, variable infill, or non-uniform wall thickness.</div>
           <div class="pill-group" role="group" aria-label="Wheel inertia model">
-            <button class="pill-opt active"
-                    data-target="wheel-mode" data-value="annular"
-                    onclick="setPill(this); toggleWheelMode()">
-              Annular Disc<br>
-              <span style="font-size:.55rem;opacity:.7;text-transform:none;letter-spacing:0;">I = ½m(R²+r²)</span>
+            <button class="pill-opt active" data-target="wheel-mode" data-value="annular" onclick="setPill(this); toggleWheelMode()">
+              Annular Disc<br><span style="font-size:.52rem;opacity:.65;text-transform:none;letter-spacing:0;">I = ½m(R²+r²)</span>
             </button>
-            <button class="pill-opt"
-                    data-target="wheel-mode" data-value="moi"
-                    onclick="setPill(this); toggleWheelMode()">
-              Custom MOI<br>
-              <span style="font-size:.55rem;opacity:.7;text-transform:none;letter-spacing:0;">measured / calculated</span>
+            <button class="pill-opt" data-target="wheel-mode" data-value="moi" onclick="setPill(this); toggleWheelMode()">
+              Custom MOI<br><span style="font-size:.52rem;opacity:.65;text-transform:none;letter-spacing:0;">measured / calculated</span>
             </button>
           </div>
           <input type="hidden" id="wheel-mode" value="annular">
         </div>
-
-        <!-- Annular disc: bore diameter input -->
         <div id="annular-opts">
           <div class="input-row">
-            <label for="bore-dia">
-              Axle Bore Diameter
-              <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-            </label>
-            <div class="tip-box" role="tooltip">
-              Diameter of the hole through the centre of each wheel.
-              I = ½m(R_outer² + R_bore²).
-              Typical 1/8″ steel axle → bore ≈ 3.2–3.5 mm.
-            </div>
-            <div class="input-wrap">
-              <input type="number" id="bore-dia" value="3.4" min="0.5" max="15" step="0.05">
-              <span class="unit">mm</span>
-            </div>
+            <label for="bore-dia">Axle Bore Diameter<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+            <div class="tip-box" role="tooltip">Diameter of the hole through the centre of each wheel. I = ½m(R_outer² + R_bore²). Typical 1/8″ steel axle → bore ≈ 3.2–3.5 mm.</div>
+            <div class="input-wrap"><input type="number" id="bore-dia" value="3.4" min="0.5" max="15" step="0.05"><span class="unit">mm</span></div>
           </div>
           <div class="input-note">I = ½m(R² + r_bore²) · applied to all four wheels</div>
         </div>
-
-        <!-- Custom MOI: user-supplied values -->
         <div id="moi-opts" style="display:none;">
-
           <div class="moi-unit-row">
             <span class="moi-unit-label">Units</span>
             <div class="moi-unit-toggle">
-              <button id="moi-btn-gcm2" onclick="setMoiUnit('gcm2')"
-                      style="background:rgba(232,0,45,0.18);color:var(--accent);font-weight:700;">
-                g·cm²
-              </button>
-              <button id="moi-btn-kgm2" onclick="setMoiUnit('kgm2')"
-                      style="background:var(--surface);color:var(--muted);font-weight:400;">
-                kg·m²
-              </button>
+              <button id="moi-btn-gcm2" onclick="setMoiUnit('gcm2')" style="background:rgba(0,212,255,0.18);color:var(--accent);font-weight:700;">g·cm²</button>
+              <button id="moi-btn-kgm2" onclick="setMoiUnit('kgm2')" style="background:var(--surface);color:var(--muted);font-weight:400;">kg·m²</button>
             </div>
           </div>
-
           <div class="input-row">
-            <label for="moi-front">
-              Front Wheel MOI
-              <span>per wheel</span>
-            </label>
-            <div class="input-wrap">
-              <input type="number" id="moi-front" value="0.5" min="0.0001" max="100000" step="0.01">
-              <span class="unit" id="moi-unit-lbl">g·cm²</span>
-            </div>
+            <label for="moi-front">Front Wheel MOI<span>per wheel</span></label>
+            <div class="input-wrap"><input type="number" id="moi-front" value="0.5" min="0.0001" max="100000" step="0.01"><span class="unit" id="moi-unit-lbl">g·cm²</span></div>
           </div>
-
           <div class="input-row">
-            <label for="moi-rear">
-              Rear Wheel MOI
-              <span>per wheel</span>
-            </label>
-            <div class="input-wrap">
-              <input type="number" id="moi-rear" value="0.8" min="0.0001" max="100000" step="0.01">
-              <span class="unit" id="moi-unit-lbl2">g·cm²</span>
-            </div>
+            <label for="moi-rear">Rear Wheel MOI<span>per wheel</span></label>
+            <div class="input-wrap"><input type="number" id="moi-rear" value="0.8" min="0.0001" max="100000" step="0.01"><span class="unit" id="moi-unit-lbl2">g·cm²</span></div>
           </div>
-
           <div class="input-note">m_rot_eff = 2·I_F/r_F² + 2·I_R/r_R² · diameters still required</div>
         </div>
-
       </div>
-    </div><!-- /wheels -->
+    </div>
 
-
-    <!-- ── Axles ─────────────────────────────────────────────── -->
+    <!-- Axles -->
     <div class="section-card">
       <div class="section-header" onclick="toggleSection(this)">
-        <div class="section-dot" style="background:#c084fc"></div>
+        <div class="section-dot" style="background:var(--purple)"></div>
         <div class="section-title">Axles</div>
         <div class="section-arrow open" aria-hidden="true">▶</div>
       </div>
       <div class="section-body">
-
         <div class="input-full">
-          <label>
-            Axle Setup
-            <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-          </label>
+          <label>Axle Setup<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
           <div class="tip-box" role="tooltip">
-            <strong>Wheels spin / axle fixed:</strong> Standard for F1 in Schools.
-            Axle is press-fit into the body — only wheels spin. Bearings press into
-            the wheel hub with the inner race riding on the fixed axle.<br><br>
-            <strong>Axle spins with wheels:</strong> Both wheel and axle inertia
-            must be overcome at launch. Solid-cylinder model: I = ½mr².
+            <strong>Wheels spin / axle fixed:</strong> Standard for F1 in Schools. Axle is press-fit into the body — only wheels spin.<br><br>
+            <strong>Axle spins with wheels:</strong> Both wheel and axle inertia must be overcome at launch. Solid-cylinder model: I = ½mr².
           </div>
           <div class="pill-group" role="group" aria-label="Axle setup">
-            <button class="pill-opt active"
-                    data-target="axle-setup" data-value="static"
-                    onclick="setPill(this); updateAxleSetup()">
-              Wheels spin<br>
-              <span style="font-size:.55rem;opacity:.7;">axle stays fixed</span>
+            <button class="pill-opt active" data-target="axle-setup" data-value="static" onclick="setPill(this); updateAxleSetup()">
+              Wheels spin<br><span style="font-size:.52rem;opacity:.65;">axle stays fixed</span>
             </button>
-            <button class="pill-opt"
-                    data-target="axle-setup" data-value="dynamic"
-                    onclick="setPill(this); updateAxleSetup()">
-              Axle spins<br>
-              <span style="font-size:.55rem;opacity:.7;">rotates with wheels</span>
+            <button class="pill-opt" data-target="axle-setup" data-value="dynamic" onclick="setPill(this); updateAxleSetup()">
+              Axle spins<br><span style="font-size:.52rem;opacity:.65;">rotates with wheels</span>
             </button>
           </div>
           <input type="hidden" id="axle-setup" value="static">
         </div>
-
-        <!-- Static axle (F1 in Schools standard) -->
         <div id="axle-static-opts">
-
           <div class="input-row">
-            <label for="axle-dia-static">
-              Axle Diameter
-              <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-            </label>
-            <div class="tip-box" role="tooltip">
-              Outside diameter of the steel axle. Standard 1/8" = 3.175 mm.
-              Used to calculate bearing friction: F = μ × m × g × (r_axle / r_wheel).
-            </div>
-            <div class="input-wrap">
-              <input type="number" id="axle-dia-static" value="3.175" min="1" max="10" step="0.025">
-              <span class="unit">mm</span>
-            </div>
+            <label for="axle-dia-static">Axle Diameter<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+            <div class="tip-box" role="tooltip">Outside diameter of the steel axle. Standard 1/8" = 3.175 mm. Used to calculate bearing friction: F = μ × m × g × (r_axle / r_wheel).</div>
+            <div class="input-wrap"><input type="number" id="axle-dia-static" value="3.175" min="1" max="10" step="0.025"><span class="unit">mm</span></div>
           </div>
-
           <div class="input-full">
-            <label>
-              Axle Bearing Type
-              <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-            </label>
-            <div class="tip-box" role="tooltip">
-              F1 in Schools cars use ball bearings pressed into the wheel hub.
-              The wheel spins around the fixed axle with the bearing inner race
-              on the axle surface. Select your bearing type. Plain bore options
-              are for cars without bearings.
-            </div>
+            <label>Axle Bearing Type<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+            <div class="tip-box" role="tooltip">F1 in Schools cars use ball bearings pressed into the wheel hub. The wheel spins around the fixed axle with the bearing inner race on the axle surface.</div>
             <div class="styled-select-wrap">
               <select id="mu-bore-preset" class="styled-select" onchange="applyMuBorePreset()">
                 <option value="0.001">Ball bearing — ABEC 5/7 (competition)</option>
                 <option value="0.003">Ball bearing — standard</option>
                 <option value="0.005">Needle bearing</option>
-                <option value="0.06" >Flanged brass bushing</option>
-                <option value="0.08" >Brass bushing</option>
-                <option value="0.15" >PLA bore — wax / petroleum jelly</option>
-                <option value="0.10" >PLA bore — graphite</option>
-                <option value="0.25" >PLA bore — dry (no bearing)</option>
+                <option value="0.06">Flanged brass bushing</option>
+                <option value="0.08">Brass bushing</option>
+                <option value="0.15">PLA bore — wax / petroleum jelly</option>
+                <option value="0.10">PLA bore — graphite</option>
+                <option value="0.25">PLA bore — dry (no bearing)</option>
                 <option value="custom">Custom μ…</option>
               </select>
             </div>
           </div>
-
           <div class="input-row" id="mu-bore-custom-row" style="display:none;">
             <label for="mu-bore-custom">Custom μ_bearing</label>
-            <div class="input-wrap">
-              <input type="number" id="mu-bore-custom" value="0.003"
-                     min="0.0001" max="1.0" step="0.001" oninput="syncCustomMuBore()">
-            </div>
+            <div class="input-wrap"><input type="number" id="mu-bore-custom" value="0.003" min="0.0001" max="1.0" step="0.001" oninput="syncCustomMuBore()"></div>
           </div>
           <input type="hidden" id="mu-bore" value="0.001">
-
-          <div class="input-note">
-            F_bearing = μ × m(t) × g × (r_axle / r_wheel) — weighted 40/60 front/rear.
-          </div>
-
-        </div><!-- /axle-static-opts -->
-
-        <!-- Dynamic axle (axle rotates with wheels) -->
+          <div class="input-note">F_bearing = μ × m(t) × g × (r_axle / r_wheel) — weighted 40/60 front/rear.</div>
+        </div>
         <div id="axle-dynamic-opts" style="display:none;">
-
-          <div class="input-note" style="margin-bottom:.5rem;">
-            Axle rotates with wheels — no bore sliding friction. Inertia penalty
-            plus body bearing friction where the axle sits in the car body.
-          </div>
-
+          <div class="input-note" style="margin-bottom:.45rem;">Axle rotates with wheels — no bore sliding friction. Inertia penalty plus body bearing friction where the axle sits in the car body.</div>
           <div class="input-row">
-            <label for="axle-dia">
-              Axle Diameter
-              <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-            </label>
-            <div class="tip-box" role="tooltip">
-              Outside diameter of the spinning axle. Standard 1/8" = 3.175 mm.
-              Used for rotational inertia and body bearing friction calculations.
-            </div>
-            <div class="input-wrap">
-              <input type="number" id="axle-dia" value="3.175" min="1" max="10" step="0.025">
-              <span class="unit">mm</span>
-            </div>
+            <label for="axle-dia">Axle Diameter<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+            <div class="tip-box" role="tooltip">Outside diameter of the spinning axle. Standard 1/8" = 3.175 mm. Used for rotational inertia and body bearing friction calculations.</div>
+            <div class="input-wrap"><input type="number" id="axle-dia" value="3.175" min="1" max="10" step="0.025"><span class="unit">mm</span></div>
           </div>
-
           <div class="input-row">
-            <label for="axle-mass">
-              Axle Mass
-              <span>one axle</span>
-            </label>
-            <div class="input-wrap">
-              <input type="number" id="axle-mass" value="4.0" min="0.5" max="30" step="0.1">
-              <span class="unit">g</span>
-            </div>
+            <label for="axle-mass">Axle Mass<span>one axle</span></label>
+            <div class="input-wrap"><input type="number" id="axle-mass" value="4.0" min="0.5" max="30" step="0.1"><span class="unit">g</span></div>
           </div>
-
           <div class="input-full">
-            <label>
-              Body Bearing Lubrication
-              <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-            </label>
-            <div class="tip-box" role="tooltip">
-              Steel axle spinning in PLA body pocket.
-              F = μ × m(t) × g × (r_axle / r_wheel), weighted 40/60 front/rear.
-            </div>
+            <label>Body Bearing Lubrication<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+            <div class="tip-box" role="tooltip">Steel axle spinning in PLA body pocket. F = μ × m(t) × g × (r_axle / r_wheel), weighted 40/60 front/rear.</div>
             <div class="styled-select-wrap">
               <select id="mu-body-preset" class="styled-select" onchange="applyMuBodyPreset()">
                 <option value="0.25">Steel on PLA — dry</option>
@@ -499,44 +286,27 @@
               </select>
             </div>
           </div>
-
           <div class="input-row" id="mu-body-custom-row" style="display:none;">
             <label for="mu-body-custom">Custom μ_body</label>
-            <div class="input-wrap">
-              <input type="number" id="mu-body-custom" value="0.25"
-                     min="0.01" max="1.0" step="0.01" oninput="syncCustomMuBody()">
-            </div>
+            <div class="input-wrap"><input type="number" id="mu-body-custom" value="0.25" min="0.01" max="1.0" step="0.01" oninput="syncCustomMuBody()"></div>
           </div>
           <input type="hidden" id="mu-body" value="0.25">
-
-          <div class="input-note">
-            F_body = μ × m(t) × g × (r_axle / r_wheel) — weighted 40/60 front/rear.
-          </div>
-
-        </div><!-- /axle-dynamic-opts -->
-
+          <div class="input-note">F_body = μ × m(t) × g × (r_axle / r_wheel) — weighted 40/60 front/rear.</div>
+        </div>
       </div>
-    </div><!-- /axles -->
+    </div>
 
-
-    <!-- ── Rolling Resistance ────────────────────────────────── -->
+    <!-- Rolling Resistance -->
     <div class="section-card">
       <div class="section-header" onclick="toggleSection(this)">
-        <div class="section-dot" style="background:#39B54A"></div>
+        <div class="section-dot" style="background:var(--green)"></div>
         <div class="section-title">Rolling Resistance</div>
         <div class="section-arrow open" aria-hidden="true">▶</div>
       </div>
       <div class="section-body">
-
         <div class="input-full">
-          <label>
-            Surface &amp; Wheel Type
-            <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-          </label>
-          <div class="tip-box" role="tooltip">
-            Rolling resistance (μr) captures energy lost as wheels deform against
-            the track. F_roll = μr × m × g. Smooth aluminium gives lowest values.
-          </div>
+          <label>Surface &amp; Wheel Type<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+          <div class="tip-box" role="tooltip">Rolling resistance (μr) captures energy lost as wheels deform against the track. F_roll = μr × m × g. Smooth aluminium gives lowest values.</div>
           <div class="styled-select-wrap">
             <select id="mu-r-preset" class="styled-select" onchange="applyMuPreset()">
               <option value="0.010">Plastic wheels · Aluminium track</option>
@@ -547,370 +317,210 @@
             </select>
           </div>
         </div>
-
         <div class="input-row" id="mu-r-custom-row" style="display:none;">
-          <label for="mu-r-custom">
-            Custom μr
-            <button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button>
-          </label>
-          <div class="tip-box" role="tooltip">
-            Dimensionless rolling resistance. Typical CO₂ dragster range: 0.006–0.025.
-          </div>
-          <div class="input-wrap">
-            <input type="number" id="mu-r-custom" value="0.010"
-                   min="0.001" max="0.1" step="0.001" oninput="syncCustomMuR()">
-          </div>
+          <label for="mu-r-custom">Custom μr<button class="tip-btn" onclick="toggleTip(this)" aria-label="Help">?</button></label>
+          <div class="tip-box" role="tooltip">Dimensionless rolling resistance. Typical CO₂ dragster range: 0.006–0.025.</div>
+          <div class="input-wrap"><input type="number" id="mu-r-custom" value="0.010" min="0.001" max="0.1" step="0.001" oninput="syncCustomMuR()"></div>
         </div>
-
         <input type="hidden" id="mu-r" value="0.010">
         <div class="input-note">F_roll = μr × m(t) × g — updates each step as CO₂ mass depletes.</div>
-
       </div>
-    </div><!-- /rolling resistance -->
+    </div>
 
-
-    <!-- ── CO₂ & Environment ─────────────────────────────────── -->
+    <!-- CO₂ & Environment -->
     <div class="section-card">
       <div class="section-header" onclick="toggleSection(this)">
-        <div class="section-dot" style="background:#FFD700"></div>
+        <div class="section-dot" style="background:var(--yellow)"></div>
         <div class="section-title">CO₂ &amp; Environment</div>
         <div class="section-arrow open" aria-hidden="true">▶</div>
       </div>
       <div class="section-body">
-
-        <div class="input-note">
-          Standard 8g CO₂ cartridge. Thrust curve fitted to Pitsco 8g measured data.
-        </div>
-
-        <!--
-          Thrust curve parameters — fitted to Pitsco 8g cartridge.
-          Changing these values here updates BOTH the physics simulation
-          AND the thrust curve chart on the next run.
-
-          F(t) = F0 · exp(−t / tau),  0 ≤ t ≤ dur
-            co2-F0  = peak thrust (N)
-            co2-tau = time constant (s)
-            co2-dur = burn duration (s)
-        -->
+        <div class="input-note">Standard 8g CO₂ cartridge. Thrust curve fitted to Pitsco 8g measured data.</div>
         <input type="hidden" id="co2-F0"  value="9.2">
         <input type="hidden" id="co2-tau" value="0.25">
         <input type="hidden" id="co2-dur" value="0.5">
-
         <hr class="divider">
-
         <div class="input-row">
           <label for="track">Track Length</label>
-          <div class="input-wrap">
-            <input type="number" id="track" value="20" min="5" max="100" step="0.5">
-            <span class="unit">m</span>
-          </div>
+          <div class="input-wrap"><input type="number" id="track" value="20" min="5" max="100" step="0.5"><span class="unit">m</span></div>
         </div>
-
-        <div class="input-note">
-          Assumes smooth, flat surface. CO₂ mass depletes proportionally to thrust.
-        </div>
-
+        <div class="input-note">Assumes smooth, flat surface. CO₂ mass depletes proportionally to thrust.</div>
       </div>
-    </div><!-- /co2 & environment -->
+    </div>
 
-
-    <!-- ── Run + Save (sticky footer) ───────────────────────── -->
+    <!-- Sticky run bar -->
     <div class="sidebar-sticky">
-
       <div id="validation-banner" role="alert" aria-live="polite"></div>
-
       <button class="run-btn" onclick="runSim()">🏁 RUN SIMULATION</button>
-
       <div class="save-bar">
-        <div style="display:flex; gap:.5rem; align-items:center; width:100%;">
-          <input type="text" id="run-label" placeholder="Label this run…" class="save-input"
-                 aria-label="Run label">
-          <input type="color" id="run-colour" value="#00D2BE" title="Pick run colour"
-                 aria-label="Run colour"
-                 style="width:32px;height:32px;padding:2px;border:1px solid var(--border2);
-                        border-radius:3px;background:var(--surface);cursor:pointer;flex-shrink:0;">
+        <div style="display:flex;gap:.5rem;align-items:center;width:100%;">
+          <input type="text" id="run-label" placeholder="Label this run…" class="save-input" aria-label="Run label">
+          <input type="color" id="run-colour" value="#00D4FF" title="Pick run colour" aria-label="Run colour"
+                 style="width:32px;height:32px;padding:2px;border:1px solid var(--border2);border-radius:3px;background:var(--surface);cursor:pointer;flex-shrink:0;">
         </div>
         <button class="save-btn" id="save-btn" onclick="saveRun()"
-                style="width:100%;margin-top:.4rem;opacity:.4;cursor:not-allowed;" disabled>
+                style="width:100%;margin-top:.35rem;opacity:.4;cursor:not-allowed;" disabled>
           💾 Save Run — run simulation first
         </button>
       </div>
-
-    </div><!-- /sidebar-sticky -->
+    </div>
 
   </aside><!-- /sidebar -->
 
-
-  <!-- ══════════════════════════
-       MAIN — results & charts
-  ══════════════════════════ -->
+  <!-- ══ MAIN ══ -->
   <main class="main">
 
-
-    <!-- 1 ── Result cards ──────────────────────────────────── -->
+    <!-- Result cards -->
     <div class="results-grid">
-
-      <div class="result-card rc-red">
+      <div class="result-card rc-blue">
         <div class="result-label">Predicted Finish Time</div>
-        <div style="display:flex; align-items:baseline; gap:.6rem;">
+        <div style="display:flex;align-items:baseline;gap:.55rem;">
           <div class="result-value" id="r-time">—</div>
-          <!--
-            Delta badge — shows change vs previous run.
-            Class is toggled between 'faster' and 'slower' by ui.js.
-          -->
-          <div id="r-delta"
-               style="display:none;font-family:var(--font-mono);font-size:.8rem;
-                      font-weight:700;padding:.15rem .4rem;border-radius:3px;"
-               aria-live="polite"></div>
+          <div id="r-delta" style="display:none;font-family:var(--font-mono);font-size:.75rem;font-weight:700;padding:.12rem .38rem;border-radius:3px;" aria-live="polite"></div>
         </div>
         <div class="result-unit">seconds · see model note below</div>
       </div>
-
-      <div class="result-card rc-teal">
+      <div class="result-card rc-amber">
         <div class="result-label">Peak Speed</div>
         <div class="result-value" id="r-speed">—</div>
         <div class="result-unit">m/s · <span id="r-kmh">—</span> km/h</div>
       </div>
-
-      <div class="result-card rc-amber">
+      <div class="result-card rc-red">
         <div class="result-label">Peak Accel</div>
         <div class="result-value" id="r-g">—</div>
         <div class="result-unit">G's at launch · <span id="r-ms2">—</span> m/s²</div>
       </div>
+    </div>
 
-    </div><!-- /results-grid -->
-
-
-    <!-- 2 ── Forces breakdown ──────────────────────────────── -->
-    <!--
-      Placed immediately after results so the insight is
-      contextually adjacent to the numbers that produced it.
-    -->
+    <!-- Forces breakdown -->
     <div class="breakdown-card" id="forces-card">
-
-      <div class="breakdown-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="breakdown-title" style="display:flex;justify-content:space-between;align-items:center;">
         <span>What's Slowing Your Car?</span>
         <button onclick="toggleForcesExplain()"
-                style="font-size:.58rem;color:var(--muted);cursor:pointer;
-                       text-decoration:underline;font-family:var(--font-mono);
-                       font-weight:400;letter-spacing:.05em;text-transform:none;
-                       background:none;border:none;padding:0;"
-                aria-expanded="false">
-          explain
-        </button>
+                style="font-size:.56rem;color:var(--muted);cursor:pointer;text-decoration:underline;font-family:var(--font-mono);font-weight:400;letter-spacing:.05em;text-transform:none;background:none;border:none;padding:0;"
+                aria-expanded="false">explain</button>
       </div>
-
-      <!-- Physics explanation (hidden by default) -->
-      <div id="forces-explain"
-           style="display:none;font-size:.63rem;color:var(--muted);line-height:1.7;
-                  background:var(--surface);border-radius:3px;padding:.6rem .8rem;
-                  margin-bottom:.8rem;">
-        <strong style="color:var(--text);font-weight:700;">At launch</strong> — air drag is zero.
-        Resistance is entirely wheel spin-up inertia: F = m_rot_eff × a_launch,
-        where m_rot_eff = Σ(I / r²).<br><br>
-        <strong style="color:var(--text);font-weight:700;">At peak speed</strong> — air drag dominates,
-        growing with v². This is the main force limiting your top speed.
+      <div id="forces-explain" style="display:none;font-size:.62rem;color:var(--muted);line-height:1.75;background:var(--surface);border-radius:3px;padding:.55rem .75rem;margin-bottom:.75rem;">
+        <strong style="color:var(--text);font-weight:700;">At launch</strong> — air drag is zero. Resistance is entirely wheel spin-up inertia: F = m_rot_eff × a_launch, where m_rot_eff = Σ(I / r²).<br><br>
+        <strong style="color:var(--text);font-weight:700;">At peak speed</strong> — air drag dominates, growing with v². This is the main force limiting your top speed.
       </div>
-
-      <!-- Pre-run placeholder (hidden after first simulation) -->
-      <div id="forces-empty-state"
-           style="font-size:.62rem;color:var(--muted);text-align:center;
-                  padding:.8rem 0;letter-spacing:.06em;">
+      <div id="forces-empty-state" style="font-size:.6rem;color:var(--muted);text-align:center;padding:.75rem 0;letter-spacing:.06em;font-family:var(--font-display);text-transform:uppercase;">
         Run simulation to populate force breakdown
       </div>
-
-      <!-- Post-run data (shown after first simulation) -->
       <div id="forces-data" style="display:none;">
-
         <div class="forces-section-label">At Launch</div>
         <div class="breakdown-row">
           <div class="bd-label">Wheel Spin-up</div>
-          <div class="bd-bar-wrap">
-            <div class="bd-bar" id="bar-rot" style="background:var(--yellow);width:0%"></div>
-          </div>
+          <div class="bd-bar-wrap"><div class="bd-bar" id="bar-rot" style="background:var(--yellow);width:0%"></div></div>
           <div class="bd-val" id="val-rot">—</div>
         </div>
-
-        <div class="forces-section-label" style="margin-top:.6rem;">At Peak Speed</div>
+        <div class="forces-section-label" style="margin-top:.55rem;">At Peak Speed</div>
         <div class="breakdown-row">
           <div class="bd-label">Air Resistance</div>
-          <div class="bd-bar-wrap">
-            <div class="bd-bar" id="bar-aero" style="background:var(--teal);width:0%"></div>
-          </div>
+          <div class="bd-bar-wrap"><div class="bd-bar" id="bar-aero" style="background:var(--accent);width:0%"></div></div>
           <div class="bd-val" id="val-aero">—</div>
         </div>
+      </div>
+    </div>
 
-      </div><!-- /forces-data -->
-
-    </div><!-- /forces-card -->
-
-
-    <!-- 3 ── Speed & Distance chart ─────────────────────────── -->
+    <!-- Speed & Distance chart -->
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-title">Speed &amp; Distance vs Time</div>
         <div class="chart-legend" aria-label="Chart legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#00D2BE"></div>Speed (m/s)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#FF8000"></div>Distance (m)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Speed (m/s)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Distance (m)</div>
         </div>
       </div>
-
-      <!-- Empty state: inline force diagram showing what the sim models -->
       <div id="chart-empty" class="empty-state" aria-label="Run simulation to see chart">
-        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg"
-             style="max-width:320px;width:90%;opacity:.75;" aria-hidden="true">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;width:90%;opacity:.5;" aria-hidden="true">
           <defs>
-            <marker id="ah-thrust" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto">
-              <path d="M0,0 L7,3 L0,6 Z" fill="#E8002D"/>
-            </marker>
-            <marker id="ah-drag" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto">
-              <path d="M0,0 L7,3 L0,6 Z" fill="#00D2BE"/>
-            </marker>
+            <marker id="ah-thrust" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--red)"/></marker>
+            <marker id="ah-drag" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--accent)"/></marker>
           </defs>
-          <!-- Car silhouette -->
-          <path d="M 102,55 C 108,43 132,39 160,39 L 228,39 C 246,39 254,47 254,55
-                   C 254,63 246,71 228,71 L 160,71 C 132,71 108,67 102,55 Z"
-                fill="var(--panel)" stroke="var(--border2)" stroke-width="1.5"/>
-          <!-- Wheel stubs -->
+          <path d="M 102,55 C 108,43 132,39 160,39 L 228,39 C 246,39 254,47 254,55 C 254,63 246,71 228,71 L 160,71 C 132,71 108,67 102,55 Z" fill="var(--panel)" stroke="var(--border2)" stroke-width="1.5"/>
           <rect x="132" y="32" width="14" height="9" rx="2" fill="var(--border)" stroke="var(--border2)" stroke-width="1"/>
           <rect x="132" y="69" width="14" height="9" rx="2" fill="var(--border)" stroke="var(--border2)" stroke-width="1"/>
           <rect x="204" y="32" width="14" height="9" rx="2" fill="var(--border)" stroke="var(--border2)" stroke-width="1"/>
           <rect x="204" y="69" width="14" height="9" rx="2" fill="var(--border)" stroke="var(--border2)" stroke-width="1"/>
-          <!-- Thrust arrow -->
-          <line x1="257" y1="55" x2="308" y2="55" stroke="#E8002D" stroke-width="2.5" marker-end="url(#ah-thrust)"/>
-          <text x="283" y="47" font-family="'Exo 2',sans-serif" font-size="8"
-                font-weight="700" fill="#E8002D" text-anchor="middle" letter-spacing="1.5">THRUST</text>
-          <!-- Drag arrow -->
-          <line x1="99" y1="55" x2="48" y2="55" stroke="#00D2BE" stroke-width="2" marker-end="url(#ah-drag)"/>
-          <text x="74" y="47" font-family="'Exo 2',sans-serif" font-size="8"
-                font-weight="700" fill="#00D2BE" text-anchor="middle" letter-spacing="1.5">DRAG</text>
-          <!-- Rolling resistance / inertia callout -->
-          <line x1="139" y1="80" x2="139" y2="91" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2,2" opacity=".5"/>
-          <line x1="211" y1="80" x2="211" y2="91" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2,2" opacity=".5"/>
-          <text x="175" y="101" font-family="'Exo 2',sans-serif" font-size="7"
-                fill="var(--muted)" text-anchor="middle" letter-spacing="1">
-            ROLLING RESISTANCE · WHEEL INERTIA
-          </text>
+          <line x1="257" y1="55" x2="308" y2="55" stroke="var(--red)" stroke-width="2.5" marker-end="url(#ah-thrust)"/>
+          <text x="283" y="47" font-family="'Orbitron',sans-serif" font-size="7" font-weight="700" fill="var(--red)" text-anchor="middle" letter-spacing="1.5">THRUST</text>
+          <line x1="99" y1="55" x2="48" y2="55" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah-drag)"/>
+          <text x="74" y="47" font-family="'Orbitron',sans-serif" font-size="7" font-weight="700" fill="var(--accent)" text-anchor="middle" letter-spacing="1.5">DRAG</text>
+          <text x="175" y="101" font-family="'Orbitron',sans-serif" font-size="6" fill="var(--muted)" text-anchor="middle" letter-spacing="1">ROLLING RESISTANCE · WHEEL INERTIA</text>
         </svg>
         <div class="empty-text">Configure inputs · Run simulation</div>
       </div>
+      <canvas id="chart" style="display:none;height:210px;" aria-label="Speed and distance chart"></canvas>
+    </div>
 
-      <canvas id="chart" style="display:none;height:200px;" aria-label="Speed and distance chart"></canvas>
-    </div><!-- /speed chart -->
-
-
-    <!-- 4 ── CO₂ Thrust Curve ──────────────────────────────── -->
+    <!-- Thrust curve -->
     <div class="chart-card" id="thrust-card">
       <div class="chart-header">
         <div class="chart-title">CO₂ Thrust Curve</div>
         <div class="chart-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#E8002D"></div>Thrust (N)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Thrust (N)</div>
         </div>
       </div>
-
       <div id="thrust-empty" class="empty-state" aria-label="Run simulation to see thrust curve">
-        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg"
-             style="max-width:260px;width:90%;opacity:.7;" aria-hidden="true">
-          <line x1="30" y1="10" x2="30"  y2="80" stroke="var(--border2)" stroke-width="1"/>
+        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg" style="max-width:250px;width:90%;opacity:.45;" aria-hidden="true">
+          <line x1="30" y1="10" x2="30" y2="80" stroke="var(--border2)" stroke-width="1"/>
           <line x1="30" y1="80" x2="260" y2="80" stroke="var(--border2)" stroke-width="1"/>
-          <path d="M 30,14 C 55,15 72,26 92,44 C 112,60 135,69 158,74
-                   C 180,77 205,79 240,79 L 258,79 L 258,80 L 30,80 Z"
-                fill="#E8002D" opacity=".06"/>
-          <path d="M 30,14 C 55,15 72,26 92,44 C 112,60 135,69 158,74
-                   C 180,77 205,79 240,79 L 258,79"
-                stroke="#E8002D" stroke-width="2" fill="none" stroke-dasharray="5,4" opacity=".45"/>
-          <text x="22"  y="18" font-family="'Exo 2',sans-serif" font-size="8"
-                fill="#E8002D" text-anchor="end" opacity=".5">F₀</text>
-          <text x="144" y="95" font-family="'Exo 2',sans-serif" font-size="7"
-                fill="var(--muted)" text-anchor="middle" letter-spacing="2">TIME →</text>
-          <text x="10"  y="50" font-family="'Exo 2',sans-serif" font-size="7"
-                fill="var(--muted)" text-anchor="middle" letter-spacing="1"
-                transform="rotate(-90,10,50)">THRUST</text>
+          <path d="M 30,14 C 55,15 72,26 92,44 C 112,60 135,69 158,74 C 180,77 205,79 240,79 L 258,79" stroke="var(--red)" stroke-width="2" fill="none" stroke-dasharray="5,4" opacity=".5"/>
+          <text x="144" y="95" font-family="'Orbitron',sans-serif" font-size="7" fill="var(--muted)" text-anchor="middle" letter-spacing="2">TIME →</text>
         </svg>
         <div class="empty-text">Run simulation to see thrust curve</div>
       </div>
-
       <canvas id="thrust-chart" style="display:none" aria-label="CO₂ thrust curve chart"></canvas>
-    </div><!-- /thrust chart -->
+    </div>
 
-
-    <!-- 5 ── Head-to-Head Race Replay ──────────────────────── -->
+    <!-- Head-to-head replay -->
     <div class="chart-card" id="replay-card">
       <div class="chart-header">
-        <div class="chart-title">
-          🏁
-          <span style="color:var(--teal)">Head</span><span style="color:var(--muted)">-to-</span><span style="color:var(--accent)">Head</span>
-          Race Replay
-        </div>
-        <div style="display:flex; gap:.6rem; align-items:center;">
-          <div id="replay-time-display"
-               style="display:flex;flex-direction:column;gap:.2rem;align-items:flex-end;"
-               aria-live="polite"></div>
+        <div class="chart-title">🏁 Head-to-Head Race Replay</div>
+        <div style="display:flex;gap:.55rem;align-items:center;">
+          <div id="replay-time-display" style="display:flex;flex-direction:column;gap:.18rem;align-items:flex-end;" aria-live="polite"></div>
           <button class="mini-btn" id="replay-btn" onclick="startReplay()">▶ Play</button>
           <button class="mini-btn danger" onclick="clearAllRuns()">✕ Clear</button>
         </div>
       </div>
-
-      <!-- Empty state — two coloured pill shapes as a visual hint -->
       <div id="replay-empty" class="empty-state">
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:.5rem;" aria-hidden="true">
-          <div style="width:40px;height:16px;border-radius:3px;background:var(--teal);opacity:.5;"></div>
-          <div style="width:40px;height:16px;border-radius:3px;background:var(--accent);opacity:.5;"></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:.45rem;" aria-hidden="true">
+          <div style="width:38px;height:14px;border-radius:3px;background:var(--accent);opacity:.4;"></div>
+          <div style="width:38px;height:14px;border-radius:3px;background:var(--red);opacity:.4;"></div>
         </div>
         <div class="empty-text">Save runs to race head-to-head</div>
       </div>
-
-      <canvas id="replay-canvas" height="90"
-              style="display:none;width:100%;border-radius:4px;"
-              aria-label="Race replay animation"></canvas>
-      <div id="replay-runs-legend"
-           style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.6rem;"
-           aria-label="Run legend"></div>
-    </div><!-- /replay-card -->
-
-
-    <!-- 6 ── Model note ─────────────────────────────────────── -->
-    <div class="range-card" id="range-card">
-      <div class="range-note" id="range-note" style="color:var(--muted);">
-        Run simulation to see model note.
-      </div>
+      <canvas id="replay-canvas" height="90" style="display:none;width:100%;border-radius:4px;" aria-label="Race replay animation"></canvas>
+      <div id="replay-runs-legend" style="display:flex;gap:.9rem;flex-wrap:wrap;margin-top:.55rem;" aria-label="Run legend"></div>
     </div>
 
+    <!-- Model note -->
+    <div class="range-card" id="range-card">
+      <div class="range-note" id="range-note" style="color:var(--muted);">Run simulation to see model note.</div>
+    </div>
 
-    <!-- 7 ── Saved runs ─────────────────────────────────────── -->
+    <!-- Saved runs -->
     <div class="breakdown-card" id="saved-runs-card">
-      <div class="breakdown-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="breakdown-title" style="display:flex;justify-content:space-between;align-items:center;">
         <span>Saved Runs</span>
         <button class="mini-btn danger" onclick="clearAllRuns()">✕ Clear All</button>
       </div>
-
       <div id="saved-runs-list">
-        <div class="empty-state" id="saved-runs-empty" style="position:relative;height:80px;">
+        <div class="empty-state" id="saved-runs-empty" style="position:relative;height:70px;">
           <div class="empty-text">No saved runs yet</div>
         </div>
       </div>
-
-      <!-- Finish time comparison bar chart — shown once ≥ 1 run is saved -->
-      <div id="time-chart-wrap" style="display:none;margin-top:1rem;">
-        <div style="font-size:.6rem;letter-spacing:.18em;color:var(--muted);
-                    text-transform:uppercase;margin-bottom:.5rem;font-weight:600;">
-          Finish Time Comparison
-        </div>
+      <div id="time-chart-wrap" style="display:none;margin-top:.9rem;">
+        <div style="font-family:var(--font-display);font-size:.52rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:.45rem;font-weight:600;">Finish Time Comparison</div>
         <canvas id="time-chart" aria-label="Finish time comparison chart"></canvas>
       </div>
+    </div>
 
-    </div><!-- /saved-runs-card -->
+  </main>
+</div>
 
-
-  </main><!-- /main -->
-</div><!-- /app -->
-
-
-<!-- ════════════════════════════════════════════════════════════
-     Scripts — physics.js must load before ui.js
-════════════════════════════════════════════════════════════ -->
 <script src="physics.js"></script>
 <script src="ui.js"></script>
-
 </body>
 </html>
