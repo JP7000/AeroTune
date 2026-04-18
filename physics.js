@@ -49,7 +49,7 @@ function simulate(params) {
     t += DT;
 
     if (finishT === null && x >= trackLen) {
-      finishT = t * 1.1 ;
+      finishT = t * 1.03 ;
       finishV = vel;
     }
 
