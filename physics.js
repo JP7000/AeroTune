@@ -31,7 +31,7 @@ const AIR_DENSITY        = 1.225;  // kg/m³ at 20°C, sea level
  * Value 0.98 calibrated against Pitsco track data.
  * Do not change without re-validating against measured runs.
  */
-const TIME_CORRECTION = 0.98;
+const TIME_CORRECTION = 0.95;
 
 /**
  * simulate(params) → { finishT, finishV, peakV, peakA, sT, sV, sD }
