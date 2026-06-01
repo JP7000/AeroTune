@@ -38,7 +38,7 @@ A physics-based race time predictor for CO₂-powered model dragsters, designed 
 - Use the **Save Run** button after each simulation to build a comparison table.
 - The **race replay** animates all saved runs side by side.
 - The sim is most useful for **comparing two designs** rather than predicting an exact time. Real tracks, puncture variation, and alignment all affect actual results.
-- Jointed sheet-metal tracks typically run 8–12% slower than predicted.
+
 
 ---
 
@@ -140,7 +140,7 @@ Rolling resistance updates each timestep as CO₂ mass depletes (dynamic). Typic
 - No guide string friction model.
 - Track assumed to be perfectly flat and smooth.
 - Air density is fixed at 20°C — not suitable for outdoor or temperature-variable environments.
-- Cartridge-to-cartridge fill pressure variance is not modelled (expect ±5% real-world spread).
+- Cartridge-to-cartridge fill pressure variance is not modelled (expect ±1-2% real-world spread).
 
 ---
 
