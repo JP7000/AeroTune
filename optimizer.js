@@ -53,9 +53,9 @@ const RULESET = {
   f1is: {
     name:      'F1iS World Finals 2026',
     shortName: 'F1iS',
-    // Infinitude aerodynamic reference baseline (2022 F1iS World Champions, Australia)
-    ref_Cd:    0.27,
-    ref_A_mm2: 1700,
+    // Aerodynamic reference baseline (Based on Competitive Nationals Designs)
+    ref_Cd:    0.6,
+    ref_A_mm2: 1800,
     // Rulebook constraints (Technical Regulations 2026)
     minMassG:          48,   // T3.6: min 48g without cartridge
     wheelsPlasticOnly: false,
