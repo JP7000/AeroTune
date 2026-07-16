@@ -28,7 +28,7 @@ const AIR_DENSITY        = 1.225;  // kg/m³ at 20°C, sea level
  *   - string tension losses not modelled
  *   - real thrust curve being slightly below the fitted exponential at t=0
  *
- * Value 0.97 calibrated against Pitsco track data.
+ * Value 0.95 calibrated against Pitsco track data.
  * Do not change without re-validating against measured runs.
  */
 const TIME_CORRECTION = 0.95;
