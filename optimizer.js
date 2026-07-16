@@ -39,7 +39,7 @@ const RULESET = {
     name:      'TSA National 2026',
     shortName: 'TSA',
     // Reference aerodynamic baseline — anchor for deviation calc, not a constraint target
-    ref_Cd:    0.40,
+    ref_Cd:    0.30,
     ref_A_mm2: 1300,
     // Rulebook constraints
     minMassG:          50,    // Body rule 4: min 50g without CO2
